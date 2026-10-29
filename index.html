@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Лунница — трекер цикла</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;800&family=Playfair+Display:wght@600;700&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-period" viewBox="0 0 24 24"><path d="M12 2.5c3.6 4.6 6 7.6 6 11a6 6 0 0 1-12 0c0-3.4 2.4-6.4 6-11z" fill="#fff"/></symbol>
+  <symbol id="i-ovulation" viewBox="0 0 24 24"><g stroke="#1a1033" stroke-width="2" stroke-linecap="round"><path d="M12 2v3M12 19v3M2 12h3M19 12h3M5 5l2 2M17 17l2 2M19 5l-2 2M7 17l-2 2"/></g><circle cx="12" cy="12" r="4.3" fill="#1a1033"/></symbol>
+  <symbol id="i-normal" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.5" fill="none" stroke="#2a1a5e" stroke-width="2"/><circle cx="9" cy="10" r="1.3" fill="#2a1a5e"/><circle cx="15" cy="10" r="1.3" fill="#2a1a5e"/><path d="M7.5 14c1.2 2.6 7.8 2.6 9 0" fill="none" stroke="#2a1a5e" stroke-width="2" stroke-linecap="round"/></symbol>
+  <symbol id="i-low" viewBox="0 0 24 24"><path d="M7 14.5a4 4 0 0 1 .6-7.9A5.5 5.5 0 0 1 18 8a3.3 3.3 0 0 1-.5 6.5z" fill="#fff"/><path d="M9 17.5l-1 3M13 17.5l-1 3M17 17.5l-1 3" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></symbol>
+</svg>
+
+<main class="app">
+  <div class="top">
+    <h1>Лунница</h1>
+    <button class="tbtn" id="theme" aria-label="Сменить тему">🌙</button>
+  </div>
+
+  <section id="v-cal" class="view on">
+    <div class="hero">
+      <div class="ring" aria-hidden="true">
+        <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="var(--line)" stroke-width="9"/><circle id="arc" cx="50" cy="50" r="42" fill="none" stroke="var(--yel)" stroke-width="9" stroke-linecap="round" stroke-dasharray="264" stroke-dashoffset="264"/></svg>
+        <div class="n"><b id="dayN">1</b><small>день цикла</small></div>
+      </div>
+      <div><h2 id="phName">—</h2><p id="phSub">—</p></div>
+    </div>
+    <div class="cal">
+      <div class="mh">
+        <button class="tbtn" id="prev" aria-label="Предыдущий месяц">‹</button>
+        <h2 id="mTitle"></h2>
+        <button class="tbtn" id="next" aria-label="Следующий месяц">›</button>
+      </div>
+      <div class="grid" id="dws"></div>
+      <div class="grid" id="days" style="margin-top:4px"></div>
+      <div class="legend" id="legend"></div>
+      <p class="note">Нажмите на день, чтобы поставить отметку. Маленькая точка — прогноз по вашим настройкам.</p>
+    </div>
+  </section>
+
+  <section id="v-tips" class="view">
+    <h2 style="font-size:24px;margin-bottom:10px">Советы по фазам</h2>
+    <div class="chips" id="chips" role="group" aria-label="Фаза цикла"></div>
+    <div id="tips"></div>
+  </section>
+
+  <section id="v-set" class="view">
+    <h2 style="font-size:24px;margin-bottom:10px">Мой цикл</h2>
+    <div class="set">
+      <h3>Настройки</h3>
+      <label class="f">Первый день последних месячных<input type="date" id="start"></label>
+      <div class="f">Длина цикла, дней<div class="step"><button data-k="cyc" data-d="-1" aria-label="Меньше">−</button><output id="cycV"></output><button data-k="cyc" data-d="1" aria-label="Больше">+</button></div></div>
+      <div class="f">Длительность месячных, дней<div class="step"><button data-k="per" data-d="-1" aria-label="Меньше">−</button><output id="perV"></output><button data-k="per" data-d="1" aria-label="Больше">+</button></div></div>
+    </div>
+    <div class="set">
+      <h3>Статистика отметок</h3>
+      <div class="stats" id="stats"></div>
+      <button class="btn" id="reset">Очистить все отметки</button>
+    </div>
+    <p class="note">Прогнозы приблизительные и не заменяют консультацию врача. Данные хранятся только в вашем браузере.</p>
+  </section>
+</main>
+
+<nav class="nav"><div role="tablist">
+  <button role="tab" aria-selected="true" data-v="cal"><span class="e">📅</span>Календарь</button>
+  <button role="tab" aria-selected="false" data-v="tips"><span class="e">🍌</span>Советы</button>
+  <button role="tab" aria-selected="false" data-v="set"><span class="e">⚙️</span>Мой цикл</button>
+</div></nav>
+
+<div class="sheet-bg" id="sbg"><div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sT">
+  <h3 id="sT"></h3><p id="sP">Как вы себя чувствуете в этот день?</p>
+  <div class="opts" id="opts"></div>
+  <div class="row"><button class="btn" id="sStart">Начало цикла</button><button class="btn" id="sClear">Убрать</button><button class="btn" id="sClose">Закрыть</button></div>
+</div></div>
+
+<script src="script.js"></script>
+</body>
+</html>
